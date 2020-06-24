@@ -25,3 +25,5 @@ data_grouped %>%
     theme(legend.position = "none") +
     coord_flip() +
     ylim(0, 40000)
+
+ggsave("output/emission_test.jpg", width = 20, height = 15, units = "cm")
