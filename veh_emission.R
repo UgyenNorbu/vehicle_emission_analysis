@@ -119,3 +119,23 @@ veh_all_by_year %>%
     
 ggsave("output/petrol_diesel_veh.jpeg", dpi = 300, width = 25, height = 12, units = 'cm')
 
+
+# 4. TESTING TARGET -------------------------------------------------------
+
+target_data <- read_xlsx("data/veh_emission_test_2016-19.xlsx")
+
+target_data <- target_data %>% 
+    mutate(Year = as.Date(Year, "%d-%m-%Y")) %>% 
+    pivot_longer(-Year, names_to = "attribute", values_to = "veh_num")
+
+target_data %>% 
+    ggplot(aes(x = Year, y = veh_num, color = attribute)) +
+    geom_line() +
+    ylim(0, 80000) +
+    theme_linedraw()+
+    labs(x = "Year",
+         y = "Number of vehicles",
+         color = "") +
+    theme(legend.position = "top")
+
+ggsave("output/test_target.jpg", width = 25, height = 15, units = "cm")
