@@ -4,6 +4,7 @@ library(ggplot2)
 library(scales)
 library(lubridate)
 
+
 # 1. EMISSION TEST BY REGION ----------------------------------------------
 
 data <- read_xlsx("data/EmissionTest_Details_Jan-Dec2019.xlsx")
@@ -43,11 +44,12 @@ veh_pop <- veh_pop %>%
 veh_pop %>% 
     ggplot(aes(x = Year, y = MV)) +
     geom_line(color = "#D6EAF8", size = 1.5) +
-    geom_point(color = "#2874A6", size = 3) +
-    ylim(5000, 120000) +
-    labs(x = "year",
+    geom_point(color = "#4682B4", size = 1.5) +
+    labs(x = "",
          y = "Number of vehicles") +
-    theme_linedraw() +
+    theme_minimal() +
+    scale_y_continuous(labels = unit_format(unit = "k", scale = 1e-3),
+                       limits = c(0, 120000)) +
     scale_x_datetime(date_breaks = "1 year", date_labels = "%Y") +
     theme(axis.text.x = element_text(angle = 15))
     
@@ -109,15 +111,15 @@ veh_all_by_year %>%
     ggplot(aes(x = Year, y = n)) +
     geom_area(data = pet_diesel_only, aes(fill = Engine_name, color = Engine_name), alpha = 0.2) +
     geom_line(data = rest_veh, size = 1) +
-    theme_linedraw() +
+    theme_minimal() +
     ylim(0, 10000) +
-    labs(x = "Year", 
+    labs(x = "", 
          y = "Number of vehicles registered",
-         fill = "Engine name",
-         color = "Engine name") +
+         fill = "",
+         color = "") +
     theme(legend.position = "top")
     
-ggsave("output/petrol_diesel_veh.jpeg", dpi = 300, width = 25, height = 12, units = 'cm')
+ggsave("output/petrol_diesel_veh.jpeg",  width = 25, height = 12, units = 'cm')
 
 
 # 4. TESTING TARGET -------------------------------------------------------
@@ -139,3 +141,36 @@ target_data %>%
     theme(legend.position = "top")
 
 ggsave("output/test_target.jpg", width = 25, height = 15, units = "cm")
+
+# Vehicle type  -----------------------------------------------------------
+
+veh_by_type <- all_veh %>% 
+    group_by(Vehicle_Type_Name) %>% 
+    summarise(veh_num = n())
+
+write_csv(veh_by_type, "veh_type.csv")
+
+veh_by_type %>% 
+    ggplot(aes(x =reorder(Vehicle_Type_Name, -veh_num), y = veh_num)) +
+    geom_bar(stat = "identity", fill = c("#7EC0EE")) +
+    coord_flip() +
+    xlab("") +
+    ylim(0,80000) +
+    ylab("Number of vehicles") +
+    theme_linedraw()
+
+ggsave("veh_by_type.jpg", width = 25, height = 15, units = "cm")
+
+# Vehicle engine ----------------------------------------------------------
+
+RC <- readxl::read_xlsx("./data/RC.xlsx")
+
+
+RC %>% 
+    group_by(Engine_Name) %>% 
+    tally() %>% 
+    View()
+
+
+
+
